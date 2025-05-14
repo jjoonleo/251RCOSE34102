@@ -19,6 +19,7 @@ typedef struct LinkedList
   void (*free)(struct LinkedList *);
   void (*deleteFirst)(struct LinkedList *);
   void (*insertInOrder)(struct LinkedList *, void *, int (*)(const void *, const void *));
+  void (*removeDuplicates)(struct LinkedList *, int (*)(const void *, const void *));
 } LinkedList;
 
 // Function declarations
@@ -29,5 +30,6 @@ void freeList(LinkedList *list);
 LinkedList *createLinkedList();
 void deleteFirst(LinkedList *list);
 void insertInOrder(LinkedList *list, void *data, int (*compare)(const void *, const void *));
+void removeDuplicates(LinkedList *list, int (*compare)(const void *, const void *));
 
 #endif // LINKED_LIST_H
