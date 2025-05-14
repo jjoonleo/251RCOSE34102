@@ -96,6 +96,24 @@ void insertInOrder(LinkedList *list, void *data, int (*compare)(const void *, co
   current->next = newNode;
 }
 
+void removeDuplicates(LinkedList *list, int (*compare)(const void *, const void *))
+{
+  Node *current = list->head;
+  while (current != NULL && current->next != NULL)
+  {
+    if (compare(current->data, current->next->data) == 0)
+    {
+      Node *temp = current->next;
+      current->next = current->next->next;
+      free(temp);
+    }
+    else
+    {
+      current = current->next;
+    }
+  }
+}
+
 // Initialize the LinkedList "class"
 LinkedList *createLinkedList()
 {
@@ -106,5 +124,6 @@ LinkedList *createLinkedList()
   list->free = freeList;
   list->deleteFirst = deleteFirst;
   list->insertInOrder = insertInOrder;
+  list->removeDuplicates = removeDuplicates;
   return list;
 }
