@@ -14,13 +14,12 @@ typedef struct ReadyQueueData
 
 typedef struct ReadyQueue
 {
-  TreeNode *head;
-  void *private_data; // For storing priority queue or other data structures
+  TreeNode *root;
+  int size;
   ReadyQueueData *(*pop)(struct ReadyQueue *);
   void (*push)(struct ReadyQueue *, ReadyQueueData *);
   bool (*is_empty)(struct ReadyQueue *);
-  void (*print)(struct ReadyQueue *);
-  void (*test)(struct ReadyQueue *);
+  int (*cmp)(const void *, const void *);
 } ReadyQueue;
 
 ReadyQueueData *new_ready_queue_data(Process *process, int start_time);
