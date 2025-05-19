@@ -32,11 +32,13 @@ typedef struct Process
   int turnaround_time;
   LinkedList *io_burst_list; // Linked list to store IO burst times
   void (*print)(struct Process *);
+  void (*print_status)(struct Process *);
 } Process;
 
 Process *new_process(int pid);
 
 // Function to print a Process
 void print_process(Process *process);
+void print_process_status(Process *process);
 
 #endif // PROCESS_H

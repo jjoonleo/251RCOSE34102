@@ -60,7 +60,8 @@ Process *new_process(int pid)
   }
   p->io_burst_list->removeDuplicates(p->io_burst_list, compare_io_burst); // Remove duplicates if any
 
-  p->print = print_process; // Assign the print function
+  p->print = print_process;               // Assign the print function
+  p->print_status = print_process_status; // Assign the print status function
   return p;
 }
 
@@ -73,4 +74,11 @@ void print_process(Process *process)
   printf("IO Bursts:\n");
   if (process->io_burst_list && process->io_burst_list->print)
     process->io_burst_list->print(process->io_burst_list, (void (*)(void *))print_ioburst);
+}
+
+void print_process_status(Process *process)
+{
+  if (!process)
+    return;
+  printf("Process %d: Remaining Time: %d, Waiting Time: %d, Turnaround Time: %d\n", process->pid, process->remaining_time, process->waiting_time, process->turnaround_time);
 }
