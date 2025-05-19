@@ -43,7 +43,7 @@ Process *new_process(int pid)
   Process *p = (Process *)malloc(sizeof(Process));
   p->pid = pid;
   p->arrival_time = rand() % 10;    // Random arrival time
-  p->cpu_burst = (rand() % 10) + 1; // Random CPU burst time
+  p->cpu_burst = (rand() % 11) + 2; // Random CPU burst time
 
   p->priority = rand() % 5; // Random priority
   p->remaining_time = p->cpu_burst;
