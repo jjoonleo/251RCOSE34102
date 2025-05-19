@@ -71,6 +71,15 @@ void deleteFirst(LinkedList *list)
   free(temp);
 }
 
+void *getFirst(LinkedList *list)
+{
+  if (list->head == NULL)
+  {
+    return NULL; // List is empty
+  }
+  return list->head->data;
+}
+
 // Insert a node into the linked list in ascending order
 void insertInOrder(LinkedList *list, void *data, int (*compare)(const void *, const void *))
 {
@@ -114,6 +123,11 @@ void removeDuplicates(LinkedList *list, int (*compare)(const void *, const void 
   }
 }
 
+bool is_linked_list_empty(LinkedList *list)
+{
+  return list->head == NULL;
+}
+
 // Initialize the LinkedList "class"
 LinkedList *createLinkedList()
 {
@@ -123,7 +137,9 @@ LinkedList *createLinkedList()
   list->print = printList;
   list->free = freeList;
   list->deleteFirst = deleteFirst;
+  list->getFirst = getFirst;
   list->insertInOrder = insertInOrder;
   list->removeDuplicates = removeDuplicates;
+  list->is_empty = is_linked_list_empty;
   return list;
 }
