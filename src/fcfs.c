@@ -5,34 +5,18 @@
 #include "../include/fcfs.h"
 #include "../include/priority_queue.h"
 
-void test(ReadyQueue *queue)
-{
-  printf("Testing FCFS ready queue\n");
-  // print queue->head
-  if (queue->head == NULL)
-  {
-    printf("Queue is empty\n");
-  }
-  else
-  {
-    ReadyQueueData *readyQueueData = (ReadyQueueData *)queue->head->data;
-    Process *process = (Process *)readyQueueData->process;
-    printf("Head process PID: %d\n", process->pid);
-  }
-}
-
 ReadyQueueData *pop(ReadyQueue *queue)
 {
-  if (queue->head == NULL)
+  if (queue->root == NULL)
   {
     return NULL;
   }
-  ReadyQueueData *readyQueueData = queue->head->data;
-  TreeNode *temp = queue->head;
-  
+  ReadyQueueData *readyQueueData = queue->root->data;
+  TreeNode *temp = queue->root;
+
   // For FCFS, we're using a linked list structure even though head is TreeNode*
   // We'll use TreeNode->right as our "next" pointer in the linked list
-  queue->head = queue->head->right;
+  queue->root = queue->root->right;
   free(temp);
   return readyQueueData;
 }
@@ -41,7 +25,7 @@ void push(ReadyQueue *queue, ReadyQueueData *readyQueueData)
 {
   Process *process = readyQueueData->process;
   printf("Pushing process %d to the ready queue\n", process->pid);
-  
+
   // Create a new TreeNode (instead of Node)
   TreeNode *newNode = (TreeNode *)malloc(sizeof(TreeNode));
   newNode->data = readyQueueData;
@@ -49,14 +33,14 @@ void push(ReadyQueue *queue, ReadyQueueData *readyQueueData)
   newNode->left = NULL;   // Not used in FCFS
   newNode->parent = NULL; // Not used in FCFS
 
-  if (queue->head == NULL)
+  if (queue->root == NULL)
   {
-    queue->head = newNode;
+    queue->root = newNode;
   }
   else
   {
     // Traverse to the end of the list using right pointer as "next"
-    TreeNode *current = queue->head;
+    TreeNode *current = queue->root;
     while (current->right != NULL)
     {
       current = current->right;
@@ -67,20 +51,7 @@ void push(ReadyQueue *queue, ReadyQueueData *readyQueueData)
 
 bool is_ready_queue_empty(ReadyQueue *queue)
 {
-  return queue->head == NULL;
-}
-
-void print_ready_queue(ReadyQueue *queue)
-{
-  printf("printing ready queue:\n");
-  TreeNode *current = queue->head;
-  while (current != NULL)
-  {
-    ReadyQueueData *readyQueueData = (ReadyQueueData *)current->data;
-    Process *process = (Process *)readyQueueData->process;
-    process->print(process);
-    current = current->right; // Using right pointer as "next"
-  }
+  return queue->root == NULL;
 }
 
 ReadyQueue *new_fcfs_ready_queue()
@@ -92,11 +63,9 @@ ReadyQueue *new_fcfs_ready_queue()
     perror("Failed to allocate memory for ReadyQueue");
     exit(EXIT_FAILURE);
   }
-  queue->head = NULL;
+  queue->root = NULL;
   queue->pop = pop;
   queue->push = push;
   queue->is_empty = is_ready_queue_empty;
-  queue->print = print_ready_queue;
-  queue->test = test;
   return queue;
 }
