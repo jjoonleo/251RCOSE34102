@@ -117,7 +117,7 @@ void print_process_status(Process *process)
   printf("Process %d: Remaining Time: %d, Waiting Time: %d, Turnaround Time: %d\n", process->pid, process->remaining_time, process->waiting_time, process->turnaround_time);
 }
 
-Process *new_process_manual(int pid, int arrival_time, int cpu_burst, int priority, LinkedList *io_burst_list)
+Process *new_process(int pid, int arrival_time, int cpu_burst, int priority, LinkedList *io_burst_list)
 {
   Process *p = (Process *)malloc(sizeof(Process));
   if (!p)
@@ -209,11 +209,11 @@ Process **create_processes_keyboard(int *num_processes)
         }
       }
       io_burst_list->remove_duplicates(io_burst_list, compare_io_burst);
-      processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+      processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
     }
     else
     {
-      processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+      processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
     }
   }
 
@@ -288,7 +288,7 @@ Process **create_processes_from_file(const char *filename, int *num_processes)
       }
     }
     io_burst_list->remove_duplicates(io_burst_list, compare_io_burst);
-    processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+    processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
   }
 
   fclose(file);

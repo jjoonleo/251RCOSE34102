@@ -36,7 +36,7 @@ typedef struct Process
 } Process;
 
 Process *new_process_random(int pid);
-Process *new_process_manual(int pid, int arrival_time, int cpu_burst, int priority, LinkedList *io_burst_list);
+Process *new_process(int pid, int arrival_time, int cpu_burst, int priority, LinkedList *io_burst_list);
 Process *copy_process(Process *process);
 
 Process **create_processes_keyboard(int *num_processes);
