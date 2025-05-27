@@ -139,7 +139,7 @@ static void rb_insert_fixup(ReadyQueue *queue, TreeNode *z)
     if (z == queue->root)
       break;
   }
-  queue->root->color = BLACK;
+  ((TreeNode *)(queue->root))->color = BLACK;
 }
 
 void push_priority_ready_queue(ReadyQueue *queue, ReadyQueueData *data)

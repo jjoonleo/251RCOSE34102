@@ -11,7 +11,7 @@
 #include "../include/gantt_chart.h"
 #include "../include/io_waiting_queue.h"
 #include "../include/scheduler.h"
-#include "../include/cfs.h"
+#include "../include/multi_level_ready_queue.h"
 
 #define INF 0x7FFFFFFF
 
@@ -23,10 +23,6 @@ static void handle_preemption(PriorityQueue *event_queue, ReadyQueue *ready_queu
   Process *process = current_process_event->process;
   int cpu_time_used = time - current_process_event->time;
   process->remaining_time -= cpu_time_used;
-
-  int weight = get_process_weight(process->priority);
-  int default_weight = get_process_weight(2);
-  process->vruntime += (cpu_time_used * default_weight) / weight;
 
   process->turnaround_time = time - current_process_event->process->arrival_time;
 
@@ -106,7 +102,10 @@ void schedule(Schedular *this)
           }
           else
           {
-
+            if (this->algorithm_type == MLFQ)
+            {
+              mlfq_demote_process(process);
+            }
             ReadyQueueData *ready_queue_data = new_ready_queue_data(process, this->time);
             ready_queue->push(ready_queue, ready_queue_data);
           }
@@ -117,11 +116,6 @@ void schedule(Schedular *this)
 
         case IORequested:
         {
-
-          Event *top = event_queue->top(event_queue);
-          if (top != NULL)
-          {
-          }
 
           this->gantt_chart->process_ended(this->gantt_chart, process, this->time);
 
@@ -201,15 +195,12 @@ void schedule(Schedular *this)
         }
       }
 
-      int num_ready_processes = ready_queue->size + 1;
-      int cfs_timeslice = calculate_cfs_timeslice(p, num_ready_processes);
-      int cfs_time = this->time + cfs_timeslice;
-
-      if (ready_queue->cmp == cfs_compare_process)
+      if (this->algorithm_type == MLFQ)
       {
-        if (cfs_time < event_time)
+        int quantum_time = mlfq_get_time_quantum(p->queue_level) + this->time;
+        if (quantum_time < event_time)
         {
-          event_time = cfs_time;
+          event_time = quantum_time;
           event_type = CPUBurstEnded;
         }
       }
@@ -226,18 +217,6 @@ void schedule(Schedular *this)
 
       int cpu_time_used = event_time - this->time;
       p->remaining_time -= cpu_time_used;
-
-      if (ready_queue->cmp == cfs_compare_process)
-      {
-        int weight = get_process_weight(p->priority);
-        int default_weight = get_process_weight(2);
-        p->vruntime += (cpu_time_used * default_weight) / weight;
-      }
-      else
-      {
-
-        p->vruntime += cpu_time_used * (p->priority + 1);
-      }
 
       if (event_type == CPUBurstEnded && event_time == this->time + (p->remaining_time + cpu_time_used))
       {
@@ -258,7 +237,7 @@ void schedule(Schedular *this)
   return;
 }
 
-Schedular *new_schedular(Process **processes, int process_count, ReadyQueue *ready_queue, int is_preemptive)
+Schedular *new_schedular(Process **processes, int process_count, ReadyQueue *ready_queue, int is_preemptive, SchedulingAlgorithm algorithm_type)
 {
   Schedular *schedular = (Schedular *)malloc(sizeof(Schedular));
   if (!schedular)
@@ -281,6 +260,7 @@ Schedular *new_schedular(Process **processes, int process_count, ReadyQueue *rea
   schedular->total_waiting_time = 0;
   schedular->time = 0;
   schedular->time_quantum = 0;
+  schedular->algorithm_type = algorithm_type;
   schedular->event_queue = event_queue;
   schedular->ready_queue = ready_queue;
   schedular->is_preemptive = is_preemptive;
@@ -290,7 +270,7 @@ Schedular *new_schedular(Process **processes, int process_count, ReadyQueue *rea
   return schedular;
 }
 
-Schedular *new_schedular_with_quantum(Process **processes, int process_count, ReadyQueue *ready_queue, int is_preemptive, int time_quantum)
+Schedular *new_schedular_with_quantum(Process **processes, int process_count, ReadyQueue *ready_queue, int is_preemptive, int time_quantum, SchedulingAlgorithm algorithm_type)
 {
   Schedular *schedular = (Schedular *)malloc(sizeof(Schedular));
   if (!schedular)
@@ -313,6 +293,7 @@ Schedular *new_schedular_with_quantum(Process **processes, int process_count, Re
   schedular->total_waiting_time = 0;
   schedular->time = 0;
   schedular->time_quantum = time_quantum;
+  schedular->algorithm_type = algorithm_type;
   schedular->event_queue = event_queue;
   schedular->ready_queue = ready_queue;
   schedular->is_preemptive = is_preemptive;

@@ -14,7 +14,7 @@ typedef struct ReadyQueueData
 
 typedef struct ReadyQueue
 {
-  TreeNode *root;
+  void *root;
   int size;
   ReadyQueueData *(*pop)(struct ReadyQueue *);
   void (*push)(struct ReadyQueue *, ReadyQueueData *);

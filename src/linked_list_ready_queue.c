@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "../include/process.h"
 #include "../include/ready_queue.h"
+#include "../include/priority_queue.h"
 #include "../include/linked_list_ready_queue.h"
 
 ReadyQueueData *pop_linked_list_ready_queue(ReadyQueue *queue)
@@ -9,10 +11,10 @@ ReadyQueueData *pop_linked_list_ready_queue(ReadyQueue *queue)
   {
     return NULL;
   }
-  ReadyQueueData *readyQueueData = queue->root->data;
-  TreeNode *temp = queue->root;
+  ReadyQueueData *readyQueueData = ((TreeNode *)(queue->root))->data;
+  TreeNode *temp = (TreeNode *)(queue->root);
 
-  queue->root = queue->root->right;
+  queue->root = ((TreeNode *)(queue->root))->right;
   free(temp);
   return readyQueueData;
 }

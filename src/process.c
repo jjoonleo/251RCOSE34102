@@ -47,7 +47,7 @@ Process *new_process_random(int pid)
   p->remaining_time = p->cpu_burst;
   p->waiting_time = 0;
   p->turnaround_time = 0;
-  p->vruntime = 0;
+  p->queue_level = 0;
   p->io_burst_list = new_linked_list();
 
   int num_io_bursts = rand() % min(MAX_IO_BURSTS_COUNT, p->cpu_burst - 1) + 1;
@@ -80,7 +80,7 @@ Process *copy_process(Process *process)
   new_process->remaining_time = process->remaining_time;
   new_process->waiting_time = process->waiting_time;
   new_process->turnaround_time = process->turnaround_time;
-  new_process->vruntime = process->vruntime;
+  new_process->queue_level = process->queue_level;
 
   new_process->io_burst_list = new_linked_list();
   Node *current = process->io_burst_list->head;
@@ -137,7 +137,7 @@ Process *new_process_manual(int pid, int arrival_time, int cpu_burst, int priori
   p->remaining_time = p->cpu_burst;
   p->waiting_time = 0;
   p->turnaround_time = 0;
-  p->vruntime = 0;
+  p->queue_level = 0;
   p->io_burst_list = io_burst_list;
 
   p->print = print_process;
