@@ -1,0 +1,44 @@
+#ifndef PROCESS_H
+#define PROCESS_H
+
+#include "linked_list.h"
+#include <stdlib.h>
+
+#define MAX_IO_BURSTS_COUNT 2
+
+typedef struct IOBurst
+{
+  int io_request_time;
+  int io_burst_time;
+  void (*print)(struct IOBurst *);
+} IOBurst;
+
+IOBurst *new_io_burst(int io_request_time, int io_burst_time);
+
+void print_ioburst(IOBurst *io_burst);
+
+int compare_io_burst(const void *a, const void *b);
+
+typedef struct Process
+{
+  int pid;
+  int arrival_time;
+  int cpu_burst;
+  int priority;
+  int remaining_time;
+  int waiting_time;
+  int turnaround_time;
+  int vruntime;
+  LinkedList *io_burst_list;
+  void (*print)(struct Process *);
+  void (*print_status)(struct Process *);
+  struct Process *(*copy)(struct Process *);
+} Process;
+
+Process *new_process(int pid);
+Process *copy_process(Process *process);
+
+void print_process(Process *process);
+void print_process_status(Process *process);
+
+#endif
