@@ -36,7 +36,7 @@ void print_ioburst(IOBurst *io_burst)
     printf("IO Request Time: %d, IO Burst Time: %d\n", io_burst->io_request_time, io_burst->io_burst_time);
 }
 
-Process *new_process(int pid)
+Process *new_process_random(int pid)
 {
   Process *p = (Process *)malloc(sizeof(Process));
   p->pid = pid;
@@ -115,4 +115,204 @@ void print_process_status(Process *process)
   if (!process)
     return;
   printf("Process %d: Remaining Time: %d, Waiting Time: %d, Turnaround Time: %d\n", process->pid, process->remaining_time, process->waiting_time, process->turnaround_time);
+}
+
+Process *new_process_manual(int pid, int arrival_time, int cpu_burst, int priority, LinkedList *io_burst_list)
+{
+  Process *p = (Process *)malloc(sizeof(Process));
+  if (!p)
+  {
+    perror("Error: Failed to allocate memory for Process");
+    exit(EXIT_FAILURE);
+  }
+  if (io_burst_list == NULL)
+  {
+    perror("Error: IO Burst List cannot be NULL");
+  }
+
+  p->pid = pid;
+  p->arrival_time = arrival_time;
+  p->cpu_burst = cpu_burst;
+  p->priority = priority;
+  p->remaining_time = p->cpu_burst;
+  p->waiting_time = 0;
+  p->turnaround_time = 0;
+  p->vruntime = 0;
+  p->io_burst_list = io_burst_list;
+
+  p->print = print_process;
+  p->print_status = print_process_status;
+  p->copy = copy_process;
+  return p;
+}
+
+Process **create_processes_keyboard(int *num_processes)
+{
+  printf("Enter number of processes: ");
+  scanf("%d", num_processes);
+
+  if (*num_processes <= 0)
+  {
+    printf("Error: Invalid number\n");
+    *num_processes = 0;
+    return NULL;
+  }
+
+  Process **processes = (Process **)malloc(sizeof(Process *) * (*num_processes));
+  if (!processes)
+  {
+    perror("Error: Memory allocation failed for processes array");
+    exit(EXIT_FAILURE);
+  }
+
+  for (int i = 0; i < *num_processes; i++)
+  {
+    int arrival_time, cpu_burst, priority;
+    printf("\nProcess %d:\n", i + 1);
+    printf("Enter arrival time: ");
+    scanf("%d", &arrival_time);
+    printf("Enter CPU burst time: ");
+    scanf("%d", &cpu_burst);
+    printf("Enter priority (0-4, lower is higher priority): ");
+    scanf("%d", &priority);
+
+    if (cpu_burst <= 0)
+    {
+      printf("Invalid CPU burst time! Setting to 1.\n");
+      cpu_burst = 1;
+    }
+    if (priority < 0 || priority > 4)
+    {
+      printf("Invalid priority! Setting to 2.\n");
+      priority = 2;
+    }
+
+    LinkedList *io_burst_list = new_linked_list();
+    int num_io_bursts;
+    printf("Enter number of IO bursts (0-%d): ", min(MAX_IO_BURSTS_COUNT, cpu_burst - 1));
+    scanf("%d", &num_io_bursts);
+
+    if (num_io_bursts > 0 && num_io_bursts <= min(MAX_IO_BURSTS_COUNT, cpu_burst - 1))
+    {
+      for (int j = 0; j < num_io_bursts; j++)
+      {
+        int io_request_time, io_burst_time;
+        printf("  IO Burst %d - Request time (1-%d): ", j + 1, cpu_burst - 1);
+        scanf("%d", &io_request_time);
+        printf("  IO Burst %d - Burst duration: ", j + 1);
+        scanf("%d", &io_burst_time);
+
+        if (io_request_time > 0 && io_request_time < cpu_burst && io_burst_time > 0)
+        {
+          IOBurst *io_burst = new_io_burst(io_request_time, io_burst_time);
+          io_burst_list->insert_in_order(io_burst_list, (void *)io_burst, compare_io_burst);
+        }
+      }
+      io_burst_list->remove_duplicates(io_burst_list, compare_io_burst);
+      processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+    }
+    else
+    {
+      processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+    }
+  }
+
+  return processes;
+}
+
+Process **create_processes_from_file(const char *filename, int *num_processes)
+{
+  FILE *file = fopen(filename, "r");
+  if (!file)
+  {
+    printf("Error: Could not open file '%s'\n", filename);
+    *num_processes = 0;
+    return NULL;
+  }
+
+  if (fscanf(file, "%d", num_processes) != 1 || *num_processes <= 0)
+  {
+    printf("Error: Invalid number of processes in file\n");
+    fclose(file);
+    *num_processes = 0;
+    return NULL;
+  }
+
+  Process **processes = (Process **)malloc(sizeof(Process *) * (*num_processes));
+  if (!processes)
+  {
+    perror("Failed to allocate memory for processes array");
+    fclose(file);
+    exit(EXIT_FAILURE);
+  }
+
+  for (int i = 0; i < *num_processes; i++)
+  {
+    int arrival_time, cpu_burst, priority, num_io_bursts;
+
+    if (fscanf(file, "%d %d %d %d", &arrival_time, &cpu_burst, &priority, &num_io_bursts) != 4)
+    {
+      printf("Error: Invalid process data in file for process %d\n", i + 1);
+      fclose(file);
+
+      for (int j = 0; j < i; j++)
+      {
+        free(processes[j]);
+      }
+      free(processes);
+      *num_processes = 0;
+      return NULL;
+    }
+
+    if (cpu_burst <= 0)
+      cpu_burst = 1;
+    if (priority < 0 || priority > 4)
+      priority = 2;
+
+    LinkedList *io_burst_list = new_linked_list();
+    int max_io_bursts = min(num_io_bursts, min(MAX_IO_BURSTS_COUNT, cpu_burst - 1));
+    for (int j = 0; j < max_io_bursts; j++)
+    {
+      int io_request_time, io_burst_time;
+      if (fscanf(file, "%d %d", &io_request_time, &io_burst_time) == 2)
+      {
+        if (io_request_time > 0 && io_request_time < cpu_burst && io_burst_time > 0)
+        {
+          IOBurst *io_burst = new_io_burst(io_request_time, io_burst_time);
+          io_burst_list->insert_in_order(io_burst_list, (void *)io_burst, compare_io_burst);
+        }
+      }
+      else
+      {
+        break;
+      }
+    }
+    io_burst_list->remove_duplicates(io_burst_list, compare_io_burst);
+    processes[i] = new_process_manual(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
+  }
+
+  fclose(file);
+  return processes;
+}
+
+Process **create_processes_random(int num_processes)
+{
+  if (num_processes <= 0)
+  {
+    return NULL;
+  }
+
+  Process **processes = (Process **)malloc(sizeof(Process *) * num_processes);
+  if (!processes)
+  {
+    perror("Failed to allocate memory for processes array");
+    exit(EXIT_FAILURE);
+  }
+
+  for (int i = 0; i < num_processes; i++)
+  {
+    processes[i] = new_process_random(i + 1);
+  }
+
+  return processes;
 }
