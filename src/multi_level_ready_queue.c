@@ -71,7 +71,7 @@ void push_multi_level_ready_queue(ReadyQueue *queue, ReadyQueueData *data)
   LinkedList *ready_queues = (LinkedList *)queue->root;
   Process *process = data->process;
 
-  int queue_level = process->queue_level;
+  int queue_level = process->burst_time_level;
 
   if (queue_level < 0)
   {
@@ -167,9 +167,9 @@ void mlfq_demote_process(Process *process)
     return;
   }
 
-  if (process->queue_level < 2)
+  if (process->burst_time_level < 2)
   {
-    process->queue_level++;
+    process->burst_time_level++;
   }
 }
 

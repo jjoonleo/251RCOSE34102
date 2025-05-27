@@ -197,11 +197,15 @@ void schedule(Schedular *this)
 
       if (this->algorithm_type == MLFQ)
       {
-        int quantum_time = mlfq_get_time_quantum(p->queue_level) + this->time;
-        if (quantum_time < event_time)
+        int time_quantum = mlfq_get_time_quantum(p->burst_time_level);
+        if (time_quantum > 0)
         {
-          event_time = quantum_time;
-          event_type = CPUBurstEnded;
+          int quantum_time = time_quantum + this->time;
+          if (quantum_time < event_time)
+          {
+            event_time = quantum_time;
+            event_type = CPUBurstEnded;
+          }
         }
       }
 
