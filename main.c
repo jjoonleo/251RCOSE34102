@@ -147,7 +147,7 @@ int main()
   printf("\n -------------------------------------------------\n\n");
 
   printf("round robin (quantum = 2)\n");
-  Schedular *rr_schedular = new_schedular_with_quantum(processes, num_processes, new_round_robin_ready_queue(), false, 2, ROUND_ROBIN);
+  Schedular *rr_schedular = new_schedular_with_quantum(processes, num_processes, new_round_robin_ready_queue(), false, 1, ROUND_ROBIN);
   rr_schedular->schedule(rr_schedular);
   printf("average waiting time: %.2f\n", (float)rr_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)rr_schedular->total_turnaround_time / num_processes);
@@ -161,6 +161,15 @@ int main()
   printf("average waiting time: %.2f\n", (float)rr_schedular2->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)rr_schedular2->total_turnaround_time / num_processes);
   rr_schedular2->free(rr_schedular2);
+
+  printf("\n -------------------------------------------------\n\n");
+
+  printf("Regressive round robin (quantum = 2)\n");
+  Schedular *regressive_rr_schedular = new_schedular_with_quantum(processes, num_processes, new_round_robin_ready_queue(), false, 2, REGRESSIVE_ROUND_ROBIN);
+  regressive_rr_schedular->schedule(regressive_rr_schedular);
+  printf("average waiting time: %.2f\n", (float)regressive_rr_schedular->total_waiting_time / num_processes);
+  printf("average turnaround time: %.2f\n", (float)regressive_rr_schedular->total_turnaround_time / num_processes);
+  regressive_rr_schedular->free(rr_schedular2);
 
   printf("\n -------------------------------------------------\n\n");
 

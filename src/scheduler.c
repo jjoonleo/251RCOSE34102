@@ -33,12 +33,6 @@ static void handle_preemption(PriorityQueue *event_queue, ReadyQueue *ready_queu
   }
 }
 
-void print_io_burst(void *data)
-{
-  IOBurst *io_burst = (IOBurst *)data;
-  printf("IO Request Time: %d, IO Burst Time: %d\n", io_burst->io_request_time, io_burst->io_burst_time);
-}
-
 int compare_event(const void *a, const void *b)
 {
   const Event *p1 = (const Event *)a;
@@ -105,6 +99,10 @@ void schedule(Schedular *this)
             if (this->algorithm_type == MLFQ)
             {
               mlfq_demote_process(process);
+            }
+            else if (this->algorithm_type == REGRESSIVE_ROUND_ROBIN)
+            {
+              process->quantum_time_level += 1;
             }
             ReadyQueueData *ready_queue_data = new_ready_queue_data(process, this->time);
             ready_queue->push(ready_queue, ready_queue_data);
@@ -181,6 +179,7 @@ void schedule(Schedular *this)
 
       p->waiting_time += this->time - ready_queue_data->start_time;
 
+      // Time of next event
       int event_time = this->time + p->remaining_time;
       EventType event_type = CPUBurstEnded;
 
@@ -197,7 +196,7 @@ void schedule(Schedular *this)
 
       if (this->algorithm_type == MLFQ)
       {
-        int time_quantum = mlfq_get_time_quantum(p->burst_time_level);
+        int time_quantum = mlfq_get_time_quantum(p->quantum_time_level);
         if (time_quantum > 0)
         {
           int quantum_time = time_quantum + this->time;
@@ -208,10 +207,13 @@ void schedule(Schedular *this)
           }
         }
       }
-
       else if (this->time_quantum > 0)
       {
         int quantum_time = this->time + this->time_quantum;
+        if (this->algorithm_type == REGRESSIVE_ROUND_ROBIN)
+        {
+          quantum_time += p->quantum_time_level;
+        }
         if (quantum_time < event_time)
         {
           event_time = quantum_time;
