@@ -13,7 +13,6 @@ static void rb_transplant(ReadyQueue *queue, TreeNode *u, TreeNode *v);
 static TreeNode *tree_minimum(TreeNode *node);
 static void rb_delete_fixup(ReadyQueue *queue, TreeNode *x);
 static TreeNode *rb_delete_node(ReadyQueue *queue, TreeNode *z);
-static TreeNode *find_node_to_delete(ReadyQueue *queue, TreeNode *root, ReadyQueueData *data);
 
 static TreeNode *create_node(ReadyQueueData *data)
 {
@@ -197,15 +196,6 @@ static TreeNode *tree_minimum(TreeNode *node)
   return node;
 }
 
-static TreeNode *tree_maximum(TreeNode *node)
-{
-  while (node != NULL && node->right != NULL)
-  {
-    node = node->right;
-  }
-  return node;
-}
-
 void *top_priority_ready_queue(ReadyQueue *queue)
 {
   if (!queue || queue->root == NULL)
@@ -322,29 +312,6 @@ static void rb_delete_fixup(ReadyQueue *queue, TreeNode *x)
   {
     x->color = BLACK;
   }
-}
-
-static TreeNode *find_node_to_delete(ReadyQueue *queue, TreeNode *root, ReadyQueueData *data)
-{
-  TreeNode *current = root;
-  while (current != NULL)
-  {
-    int cmp_val = queue->cmp(data, current->data);
-    if (cmp_val == 0)
-    {
-
-      return current;
-    }
-    else if (cmp_val < 0)
-    {
-      current = current->left;
-    }
-    else
-    {
-      current = current->right;
-    }
-  }
-  return NULL;
 }
 
 static TreeNode *rb_delete_node(ReadyQueue *queue, TreeNode *z)
