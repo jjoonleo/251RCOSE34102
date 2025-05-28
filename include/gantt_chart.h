@@ -3,7 +3,7 @@
 
 #include "process.h"
 
-#define BLOCK_SIZE 1
+#define BLOCK_SIZE 2
 
 typedef enum
 {
