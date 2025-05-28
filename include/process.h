@@ -28,6 +28,7 @@ typedef struct Process
   int remaining_time;
   int waiting_time;
   int turnaround_time;
+  int response_time;
   int quantum_time_level;
   LinkedList *io_burst_list;
   void (*print)(struct Process *);

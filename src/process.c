@@ -47,6 +47,7 @@ Process *new_process_random(int pid)
   p->remaining_time = p->cpu_burst;
   p->waiting_time = 0;
   p->turnaround_time = 0;
+  p->response_time = -1; // -1 indicates not yet scheduled
   p->quantum_time_level = 0;
   p->io_burst_list = new_linked_list();
 
@@ -80,6 +81,7 @@ Process *copy_process(Process *process)
   new_process->remaining_time = process->remaining_time;
   new_process->waiting_time = process->waiting_time;
   new_process->turnaround_time = process->turnaround_time;
+  new_process->response_time = process->response_time;
   new_process->quantum_time_level = process->quantum_time_level;
 
   new_process->io_burst_list = new_linked_list();
@@ -137,6 +139,7 @@ Process *new_process(int pid, int arrival_time, int cpu_burst, int priority, Lin
   p->remaining_time = p->cpu_burst;
   p->waiting_time = 0;
   p->turnaround_time = 0;
+  p->response_time = -1; // -1 indicates not yet scheduled
   p->quantum_time_level = 0;
   p->io_burst_list = io_burst_list;
 

@@ -157,6 +157,7 @@ int main()
   sjf_preemptive_schedular->schedule(sjf_preemptive_schedular);
   printf("average waiting time: %.2f\n", (float)sjf_preemptive_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)sjf_preemptive_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)sjf_preemptive_schedular->total_response_time / num_processes);
   sjf_preemptive_schedular->free(sjf_preemptive_schedular);
 
   printf("\n ------------------------------------------------\n\n");
@@ -166,6 +167,7 @@ int main()
   sjf_non_preemptive_schedular->schedule(sjf_non_preemptive_schedular);
   printf("average waiting time: %.2f\n", (float)sjf_non_preemptive_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)sjf_non_preemptive_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)sjf_non_preemptive_schedular->total_response_time / num_processes);
   sjf_non_preemptive_schedular->free(sjf_non_preemptive_schedular);
 
   printf("\n -------------------------------------------------\n\n");
@@ -175,6 +177,7 @@ int main()
   fcfs_schedular->schedule(fcfs_schedular);
   printf("average waiting time: %.2f\n", (float)fcfs_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)fcfs_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)fcfs_schedular->total_response_time / num_processes);
   fcfs_schedular->free(fcfs_schedular);
 
   printf("\n -------------------------------------------------\n\n");
@@ -184,6 +187,7 @@ int main()
   rr_schedular->schedule(rr_schedular);
   printf("average waiting time: %.2f\n", (float)rr_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)rr_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)rr_schedular->total_response_time / num_processes);
   rr_schedular->free(rr_schedular);
 
   printf("\n -------------------------------------------------\n\n");
@@ -193,6 +197,7 @@ int main()
   rr_schedular2->schedule(rr_schedular2);
   printf("average waiting time: %.2f\n", (float)rr_schedular2->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)rr_schedular2->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)rr_schedular2->total_response_time / num_processes);
   rr_schedular2->free(rr_schedular2);
 
   printf("\n -------------------------------------------------\n\n");
@@ -202,6 +207,7 @@ int main()
   regressive_rr_schedular->schedule(regressive_rr_schedular);
   printf("average waiting time: %.2f\n", (float)regressive_rr_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)regressive_rr_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)regressive_rr_schedular->total_response_time / num_processes);
   regressive_rr_schedular->free(rr_schedular2);
 
   printf("\n -------------------------------------------------\n\n");
@@ -211,6 +217,7 @@ int main()
   priority_preemptive_schedular->schedule(priority_preemptive_schedular);
   printf("average waiting time: %.2f\n", (float)priority_preemptive_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)priority_preemptive_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)priority_preemptive_schedular->total_response_time / num_processes);
   priority_preemptive_schedular->free(priority_preemptive_schedular);
 
   printf("\n -------------------------------------------------\n\n");
@@ -220,6 +227,7 @@ int main()
   priority_non_preemptive_schedular->schedule(priority_non_preemptive_schedular);
   printf("average waiting time: %.2f\n", (float)priority_non_preemptive_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)priority_non_preemptive_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)priority_non_preemptive_schedular->total_response_time / num_processes);
   priority_non_preemptive_schedular->free(priority_non_preemptive_schedular);
 
   printf("\n -------------------------------------------------\n\n");
@@ -229,6 +237,7 @@ int main()
   mlfq_schedular->schedule(mlfq_schedular);
   printf("average waiting time: %.2f\n", (float)mlfq_schedular->total_waiting_time / num_processes);
   printf("average turnaround time: %.2f\n", (float)mlfq_schedular->total_turnaround_time / num_processes);
+  printf("average response time: %.2f\n", (float)mlfq_schedular->total_response_time / num_processes);
   mlfq_schedular->free(mlfq_schedular);
 
   cleanup_processes(processes, num_processes);

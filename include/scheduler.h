@@ -18,6 +18,7 @@ typedef struct Schedular
 {
   int total_turnaround_time;
   int total_waiting_time;
+  int total_response_time;
   int time;
   int time_quantum;
   SchedulingAlgorithm algorithm_type;

@@ -179,6 +179,12 @@ void schedule(Schedular *this)
 
       p->waiting_time += this->time - ready_queue_data->start_time;
 
+      // Calculate response time if this is the first time the process is scheduled
+      if (p->response_time == -1) {
+        p->response_time = this->time - p->arrival_time;
+        this->total_response_time += p->response_time;
+      }
+
       // Time of next event
       int event_time = this->time + p->remaining_time;
       EventType event_type = CPUBurstEnded;
@@ -264,6 +270,7 @@ Schedular *new_schedular(Process **processes, int process_count, ReadyQueue *rea
 
   schedular->total_turnaround_time = 0;
   schedular->total_waiting_time = 0;
+  schedular->total_response_time = 0;
   schedular->time = 0;
   schedular->time_quantum = 0;
   schedular->algorithm_type = algorithm_type;
@@ -297,6 +304,7 @@ Schedular *new_schedular_with_quantum(Process **processes, int process_count, Re
 
   schedular->total_turnaround_time = 0;
   schedular->total_waiting_time = 0;
+  schedular->total_response_time = 0;
   schedular->time = 0;
   schedular->time_quantum = time_quantum;
   schedular->algorithm_type = algorithm_type;
