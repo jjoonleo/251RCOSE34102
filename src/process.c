@@ -148,15 +148,22 @@ Process *new_process(int pid, int arrival_time, int cpu_burst, int priority, Lin
 
 Process **create_processes_keyboard(int *num_processes)
 {
-  printf("Enter number of processes: ");
-  scanf("%d", num_processes);
 
-  if (*num_processes <= 0)
+  do
   {
-    printf("Error: Invalid number\n");
-    *num_processes = 0;
-    return NULL;
-  }
+    printf("Enter number of processes: ");
+    while (scanf("%d", num_processes) != 1)
+    {
+      printf("Invalid input! Please enter a number.\n");
+      while (getchar() != '\n')
+        ;
+      printf("Enter number of processes: ");
+    }
+    if (*num_processes <= 0)
+    {
+      printf("Error: Number of processes must be greater than 0\n");
+    }
+  } while (*num_processes <= 0);
 
   Process **processes = (Process **)malloc(sizeof(Process *) * (*num_processes));
   if (!processes)
@@ -169,52 +176,120 @@ Process **create_processes_keyboard(int *num_processes)
   {
     int arrival_time, cpu_burst, priority;
     printf("\nProcess %d:\n", i + 1);
-    printf("Enter arrival time: ");
-    scanf("%d", &arrival_time);
-    printf("Enter CPU burst time: ");
-    scanf("%d", &cpu_burst);
-    printf("Enter priority (0-4, lower is higher priority): ");
-    scanf("%d", &priority);
 
-    if (cpu_burst <= 0)
+    do
     {
-      printf("Invalid CPU burst time! Setting to 1.\n");
-      cpu_burst = 1;
-    }
-    if (priority < 0 || priority > 4)
+      printf("Enter arrival time: ");
+      while (scanf("%d", &arrival_time) != 1)
+      {
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n')
+          ;
+        printf("Enter arrival time: ");
+      }
+      if (arrival_time < 0)
+      {
+        printf("Error: Arrival time cannot be negative\n");
+      }
+    } while (arrival_time < 0);
+
+    do
     {
-      printf("Invalid priority! Setting to 2.\n");
-      priority = 2;
-    }
+      printf("Enter CPU burst time: ");
+      while (scanf("%d", &cpu_burst) != 1)
+      {
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n')
+          ;
+        printf("Enter CPU burst time: ");
+      }
+      if (cpu_burst <= 0)
+      {
+        printf("Error: CPU burst time must be greater than 0\n");
+      }
+    } while (cpu_burst <= 0);
+
+    do
+    {
+      printf("Enter priority (0-%d, lower is higher priority): ", *num_processes - 1);
+      while (scanf("%d", &priority) != 1)
+      {
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n')
+          ;
+        printf("Enter priority (0-4, lower is higher priority): ");
+      }
+      if (priority < 0 || priority > *num_processes - 1)
+      {
+        printf("Error: Priority must be between 0 and %d\n", *num_processes - 1);
+      }
+    } while (priority < 0 || priority > *num_processes - 1);
 
     LinkedList *io_burst_list = new_linked_list();
     int num_io_bursts;
-    printf("Enter number of IO bursts (0-%d): ", min(MAX_IO_BURSTS_COUNT, cpu_burst - 1));
-    scanf("%d", &num_io_bursts);
+    int max_io_bursts = min(MAX_IO_BURSTS_COUNT, cpu_burst - 1);
 
-    if (num_io_bursts > 0 && num_io_bursts <= min(MAX_IO_BURSTS_COUNT, cpu_burst - 1))
+    do
+    {
+      printf("Enter number of IO bursts (0-%d): ", max_io_bursts);
+      while (scanf("%d", &num_io_bursts) != 1)
+      {
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n')
+          ;
+        printf("Enter number of IO bursts (0-%d): ", max_io_bursts);
+      }
+      if (num_io_bursts < 0 || num_io_bursts > max_io_bursts)
+      {
+        printf("Error: Number of IO bursts must be between 0 and %d\n", max_io_bursts);
+      }
+    } while (num_io_bursts < 0 || num_io_bursts > max_io_bursts);
+
+    if (num_io_bursts > 0)
     {
       for (int j = 0; j < num_io_bursts; j++)
       {
         int io_request_time, io_burst_time;
-        printf("  IO Burst %d - Request time (1-%d): ", j + 1, cpu_burst - 1);
-        scanf("%d", &io_request_time);
-        printf("  IO Burst %d - Burst duration: ", j + 1);
-        scanf("%d", &io_burst_time);
 
-        if (io_request_time > 0 && io_request_time < cpu_burst && io_burst_time > 0)
+        do
         {
-          IOBurst *io_burst = new_io_burst(io_request_time, io_burst_time);
-          io_burst_list->insert_in_order(io_burst_list, (void *)io_burst, compare_io_burst);
-        }
+          printf("  IO Burst %d - Request time (1-%d): ", j + 1, cpu_burst - 1);
+          while (scanf("%d", &io_request_time) != 1)
+          {
+            printf("Invalid input! Please enter a number.\n");
+            while (getchar() != '\n')
+              ;
+            printf("  IO Burst %d - Request time (1-%d): ", j + 1, cpu_burst - 1);
+          }
+          if (io_request_time <= 0 || io_request_time >= cpu_burst)
+          {
+            printf("Error: IO request time must be between 1 and %d\n", cpu_burst - 1);
+          }
+        } while (io_request_time <= 0 || io_request_time >= cpu_burst);
+
+        do
+        {
+          printf("  IO Burst %d - Burst duration: ", j + 1);
+          while (scanf("%d", &io_burst_time) != 1)
+          {
+            printf("Invalid input! Please enter a number.\n");
+            while (getchar() != '\n')
+              ;
+            printf("  IO Burst %d - Burst duration: ", j + 1);
+          }
+          if (io_burst_time <= 0)
+          {
+            printf("Error: IO burst duration must be greater than 0\n");
+          }
+        } while (io_burst_time <= 0);
+
+        IOBurst *io_burst = new_io_burst(io_request_time, io_burst_time);
+        io_burst_list->insert_in_order(io_burst_list, (void *)io_burst, compare_io_burst);
       }
       io_burst_list->remove_duplicates(io_burst_list, compare_io_burst);
-      processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
     }
-    else
-    {
-      processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
-    }
+
+    processes[i] = new_process(i + 1, arrival_time, cpu_burst, priority, io_burst_list);
   }
 
   return processes;

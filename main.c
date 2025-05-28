@@ -71,8 +71,21 @@ int main()
   int num_processes = 0;
   int choice;
 
-  print_menu();
-  scanf("%d", &choice);
+  do
+  {
+    print_menu();
+    while (scanf("%d", &choice) != 1)
+    {
+      printf("Invalid input! Please enter a number.\n");
+      while (getchar() != '\n')
+        ;
+      print_menu();
+    }
+    if (choice < 1 || choice > 3)
+    {
+      printf("Invalid choice! Please enter 1, 2, or 3.\n");
+    }
+  } while (choice < 1 || choice > 3);
 
   switch (choice)
   {
@@ -84,16 +97,36 @@ int main()
   case 2:
   {
     char filename[256];
-    printf("\nEnter filename: ");
-    scanf(" %s", filename);
-    printf("\n=== Loading from file: %s ===\n", filename);
-    processes = create_processes_from_file(filename, &num_processes);
+    do
+    {
+      printf("\nEnter filename: ");
+      scanf(" %s", filename);
+      printf("\n=== Loading from file: %s ===\n", filename);
+      processes = create_processes_from_file(filename, &num_processes);
+      if (!processes || num_processes <= 0)
+      {
+        printf("Failed to load processes from file. Please try again.\n");
+      }
+    } while (!processes || num_processes <= 0);
     break;
   }
 
   case 3:
-    printf("\nEnter number of processes for random generation: ");
-    scanf("%d", &num_processes);
+    do
+    {
+      printf("\nEnter number of processes for random generation: ");
+      while (scanf("%d", &num_processes) != 1)
+      {
+        printf("Invalid input! Please enter a number.\n");
+        while (getchar() != '\n')
+          ;
+        printf("Enter number of processes for random generation: ");
+      }
+      if (num_processes <= 0)
+      {
+        printf("Error: Number of processes must be greater than 0\n");
+      }
+    } while (num_processes <= 0);
     printf("\n=== Random Generation ===\n");
     processes = create_processes_random(num_processes);
     break;
