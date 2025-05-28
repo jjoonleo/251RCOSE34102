@@ -179,13 +179,12 @@ void schedule(Schedular *this)
 
       p->waiting_time += this->time - ready_queue_data->start_time;
 
-      // Calculate response time if this is the first time the process is scheduled
-      if (p->response_time == -1) {
+      if (p->response_time == -1)
+      {
         p->response_time = this->time - p->arrival_time;
         this->total_response_time += p->response_time;
       }
 
-      // Time of next event
       int event_time = this->time + p->remaining_time;
       EventType event_type = CPUBurstEnded;
 
