@@ -6,6 +6,6 @@
 #include "priority_queue.h"
 
 int priority_compare_process(const void *a, const void *b);
-ReadyQueue *new_priority_priority_ready_queue();
+ReadyQueue *new_priority_ready_queue();
 
 #endif

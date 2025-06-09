@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "../include/process.h"
 #include "../include/ready_queue.h"
-#include "../include/priority_ready_queue.h"
+#include "../include/red_black_ready_queue.h"
 #include "../include/priority.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -26,7 +26,7 @@ int priority_compare_process(const void *a, const void *b)
   return 0;
 }
 
-ReadyQueue *new_priority_priority_ready_queue()
+ReadyQueue *new_priority_ready_queue()
 {
   ReadyQueue *queue = (ReadyQueue *)malloc(sizeof(ReadyQueue));
   if (!queue)
@@ -38,11 +38,11 @@ ReadyQueue *new_priority_priority_ready_queue()
   queue->root = NULL;
   queue->size = 0;
 
-  queue->pop = pop_priority_ready_queue;
-  queue->push = push_priority_ready_queue;
-  queue->is_empty = is_empty_priority_ready_queue;
+  queue->pop = pop_red_black_ready_queue;
+  queue->push = push_red_black_ready_queue;
+  queue->is_empty = is_empty_red_black_ready_queue;
   queue->cmp = priority_compare_process;
-  queue->free = free_priority_ready_queue;
+  queue->free = free_red_black_ready_queue;
 
   return queue;
 }

@@ -141,7 +141,7 @@ static void rb_insert_fixup(ReadyQueue *queue, TreeNode *z)
   ((TreeNode *)(queue->root))->color = BLACK;
 }
 
-void push_priority_ready_queue(ReadyQueue *queue, ReadyQueueData *data)
+void push_red_black_ready_queue(ReadyQueue *queue, ReadyQueueData *data)
 {
   if (!queue)
     return;
@@ -367,7 +367,7 @@ static TreeNode *rb_delete_node(ReadyQueue *queue, TreeNode *z)
   return z;
 }
 
-ReadyQueueData *pop_priority_ready_queue(ReadyQueue *queue)
+ReadyQueueData *pop_red_black_ready_queue(ReadyQueue *queue)
 {
   if (!queue || queue->root == NULL || queue->size == 0)
   {
@@ -392,14 +392,14 @@ ReadyQueueData *pop_priority_ready_queue(ReadyQueue *queue)
   return popped_data;
 }
 
-bool is_empty_priority_ready_queue(ReadyQueue *queue)
+bool is_empty_red_black_ready_queue(ReadyQueue *queue)
 {
   if (!queue)
     return true;
   return queue->size == 0;
 }
 
-void free_priority_ready_queue(ReadyQueue *queue)
+void free_red_black_ready_queue(ReadyQueue *queue)
 {
   if (!queue)
     return;
